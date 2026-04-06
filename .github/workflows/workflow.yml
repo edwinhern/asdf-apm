@@ -35,7 +35,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install asdf
-        uses: asdf-vm/actions/setup@v3
+        uses: asdf-vm/actions/setup@v4
 
       - name: Install plugin tools (shellcheck, shfmt)
         run: |
