@@ -10,7 +10,7 @@ fmt-check:
 .PHONY: fmt-check
 
 lint:
-	shellcheck $(SH_SRCFILES)
+	shellcheck -x --source-path=SCRIPTDIR $(SH_SRCFILES)
 .PHONY: lint
 
 test:

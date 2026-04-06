@@ -2,13 +2,35 @@
 
 set -euo pipefail
 
+GH_REPO="https://github.com/microsoft/apm"
 TOOL_NAME="apm"
-GH_REPO="microsoft/apm"
-GH_API="https://api.github.com/repos/${GH_REPO}"
+TOOL_TEST="apm --version"
 
 fail() {
-  echo -e "asdf-${TOOL_NAME}: $*" >&2
+  echo -e "asdf-$TOOL_NAME: $*" >&2
   exit 1
+}
+
+curl_opts=(-fsSL)
+
+# NOTE: You might want to remove this if apm is not hosted on GitHub releases.
+if [ -n "${GITHUB_API_TOKEN:-}" ]; then
+  curl_opts=("${curl_opts[@]}" -H "Authorization: token $GITHUB_API_TOKEN")
+fi
+
+sort_versions() {
+  sed 'h; s/[+-]/./g; s/.p\([[:digit:]]\)/.z\1/; s/$/.z/; G; s/\n/ /' |
+    LC_ALL=C sort -t. -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5n | awk '{print $2}'
+}
+
+list_github_tags() {
+  git ls-remote --tags --refs "$GH_REPO" |
+    grep -o 'refs/tags/.*' | cut -d/ -f3- |
+    sed 's/^v//'
+}
+
+list_all_versions() {
+  list_github_tags
 }
 
 get_platform() {
@@ -29,90 +51,43 @@ get_platform() {
   echo "${os}-${arch}"
 }
 
-get_download_url() {
-  local version="$1"
+get_url() {
   local platform
   platform="$(get_platform)"
-  echo "https://github.com/${GH_REPO}/releases/download/v${version}/apm-${platform}.tar.gz"
+  echo "$GH_REPO/releases/download/v${version}/apm-${platform}.tar.gz"
 }
 
-get_checksum_url() {
-  local version="$1"
-  local platform
-  platform="$(get_platform)"
-  echo "https://github.com/${GH_REPO}/releases/download/v${version}/apm-${platform}.tar.gz.sha256"
+download_release() {
+  local version filename url
+  version="$1"
+  filename="$2"
+
+  url="$(get_url)"
+
+  echo "* Downloading $TOOL_NAME release $version..."
+  curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
 }
 
-list_all_versions() {
-  local releases_url="${GH_API}/releases?per_page=100"
-  local auth_header=""
+install_version() {
+  local install_type="$1"
+  local version="$2"
+  local install_path="${3%/bin}/bin"
 
-  if [[ -n ${GITHUB_API_TOKEN:-} ]]; then
-    auth_header="Authorization: token ${GITHUB_API_TOKEN}"
+  if [ "$install_type" != "version" ]; then
+    fail "asdf-$TOOL_NAME supports release installs only"
   fi
 
-  local page=1
-  local versions=""
+  (
+    mkdir -p "$install_path"
+    cp -R "$ASDF_DOWNLOAD_PATH"/* "$install_path"
 
-  while true; do
-    local page_url="${releases_url}&page=${page}"
-    local response
+    local tool_cmd
+    tool_cmd="$(echo "$TOOL_TEST" | cut -d' ' -f1)"
+    test -x "$install_path/$tool_cmd" || fail "Expected $install_path/$tool_cmd to be executable."
 
-    if [[ -n ${auth_header} ]]; then
-      response=$(curl -fsSL -H "${auth_header}" "${page_url}" 2>/dev/null)
-    else
-      response=$(curl -fsSL "${page_url}" 2>/dev/null)
-    fi
-
-    local page_versions
-    page_versions=$(echo "${response}" | grep -o '"tag_name": *"[^"]*"' | grep -o '"v[^"]*"' | tr -d '"v' || true)
-
-    if [[ -z ${page_versions} ]]; then
-      break
-    fi
-
-    versions="${versions} ${page_versions}"
-    page=$((page + 1))
-  done
-
-  echo "${versions}" | tr ' ' '\n' | grep -v '^$' | sort -V | tr '\n' ' '
-}
-
-verify_checksum() {
-  local file="$1"
-  local checksum_file="$2"
-
-  local expected actual
-  expected=$(cut -d' ' -f1 <"${checksum_file}")
-
-  if command -v sha256sum &>/dev/null; then
-    actual=$(sha256sum "${file}" | cut -d' ' -f1)
-  elif command -v shasum &>/dev/null; then
-    actual=$(shasum -a 256 "${file}" | cut -d' ' -f1)
-  else
-    echo "asdf-${TOOL_NAME}: WARNING: No sha256sum or shasum found, skipping checksum verification." >&2
-    return 0
-  fi
-
-  if [[ ${expected} != "${actual}" ]]; then
-    fail "Checksum verification failed for ${file}. Expected: ${expected}, Got: ${actual}"
-  fi
-}
-
-curl_download() {
-  local url="$1"
-  local dest="$2"
-  local auth_header=""
-
-  if [[ -n ${GITHUB_API_TOKEN:-} ]]; then
-    auth_header="Authorization: token ${GITHUB_API_TOKEN}"
-  fi
-
-  if [[ -n ${auth_header} ]]; then
-    curl -fsSL -H "${auth_header}" -o "${dest}" "${url}" ||
-      fail "Failed to download ${url}"
-  else
-    curl -fsSL -o "${dest}" "${url}" ||
-      fail "Failed to download ${url}"
-  fi
+    echo "$TOOL_NAME $version installation was successful!"
+  ) || (
+    rm -rf "$install_path"
+    fail "An error occurred while installing $TOOL_NAME $version."
+  )
 }
