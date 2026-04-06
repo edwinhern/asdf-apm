@@ -9,7 +9,7 @@ plugin_dir=$(dirname "$(dirname "$current_script_path")")
 source "${plugin_dir}/lib/utils.bash"
 
 # Only "version" installs are supported (not git refs)
-if [[ "${ASDF_INSTALL_TYPE}" != "version" ]]; then
+if [[ ${ASDF_INSTALL_TYPE} != "version" ]]; then
   fail "asdf-${TOOL_NAME} only supports release versions, not git refs."
 fi
 
@@ -25,7 +25,7 @@ install_version() {
   local apm_binary
   apm_binary="$(find "${download_path}" -maxdepth 2 -name "apm" -type f | head -n1)"
 
-  if [[ -z "${apm_binary}" ]]; then
+  if [[ -z ${apm_binary} ]]; then
     fail "Could not find 'apm' binary in ${download_path}. Download may have failed."
   fi
 

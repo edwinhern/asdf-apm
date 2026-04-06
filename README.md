@@ -1,5 +1,7 @@
 # asdf-apm
 
+[![CI](https://github.com/edwinhern/asdf-apm/actions/workflows/workflow.yml/badge.svg)](https://github.com/edwinhern/asdf-apm/actions/workflows/workflow.yml)
+
 [Agent Package Manager (APM)](https://github.com/microsoft/apm) plugin for [asdf](https://asdf-vm.com).
 
 APM is an open-source dependency manager for AI agents by Microsoft. It provides manifest-based configuration via `apm.yml`, similar to `package.json` for npm, with transitive dependency resolution and content security scanning.
@@ -8,11 +10,10 @@ APM is an open-source dependency manager for AI agents by Microsoft. It provides
 
 ## Requirements
 
-- [asdf](https://asdf-vm.com) >= 0.10.0
-- `bash` >= 4.0
-- `curl`
-- `tar`
-- `sha256sum` or `shasum` (for checksum verification)
+- Make sure you have the required dependencies installed:
+  - `curl`
+  - `tar`
+  - `sha256sum` or `shasum`
 
 ---
 
@@ -78,20 +79,20 @@ asdf list-all apm
 
 ## Supported Platforms
 
-| OS    | Architecture | Supported |
-|-------|-------------|-----------|
-| macOS | arm64 (Apple Silicon) | Yes |
-| macOS | x86_64 (Intel) | Yes |
-| Linux | x86_64 | Yes |
-| Linux | arm64 / aarch64 | Yes |
-| Windows | any | No (asdf is Unix-only) |
+| OS      | Architecture          | Supported              |
+| ------- | --------------------- | ---------------------- |
+| macOS   | arm64 (Apple Silicon) | Yes                    |
+| macOS   | x86_64 (Intel)        | Yes                    |
+| Linux   | x86_64                | Yes                    |
+| Linux   | arm64 / aarch64       | Yes                    |
+| Windows | any                   | No (asdf is Unix-only) |
 
 ---
 
 ## Environment Variables
 
-| Variable | Description |
-|----------|-------------|
+| Variable           | Description                                                                         |
+| ------------------ | ----------------------------------------------------------------------------------- |
 | `GITHUB_API_TOKEN` | GitHub personal access token for authenticated API requests (increases rate limits) |
 
 ---
