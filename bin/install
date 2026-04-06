@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+current_script_path=${BASH_SOURCE[0]}
+plugin_dir=$(dirname "$(dirname "$current_script_path")")
+
+# shellcheck source=lib/utils.bash
+source "${plugin_dir}/lib/utils.bash"
+
+# Only "version" installs are supported (not git refs)
+if [[ "${ASDF_INSTALL_TYPE}" != "version" ]]; then
+  fail "asdf-${TOOL_NAME} only supports release versions, not git refs."
+fi
+
+version="${ASDF_INSTALL_VERSION}"
+install_path="${ASDF_INSTALL_PATH}"
+download_path="${ASDF_DOWNLOAD_PATH}"
+
+install_version() {
+  local bin_dir="${install_path}/bin"
+  mkdir -p "${bin_dir}"
+
+  # Find the apm binary in the download path (it may be at root or inside a subdir)
+  local apm_binary
+  apm_binary="$(find "${download_path}" -maxdepth 2 -name "apm" -type f | head -n1)"
+
+  if [[ -z "${apm_binary}" ]]; then
+    fail "Could not find 'apm' binary in ${download_path}. Download may have failed."
+  fi
+
+  cp "${apm_binary}" "${bin_dir}/apm"
+  chmod +x "${bin_dir}/apm"
+
+  echo "* Verifying installation..."
+  local installed_version
+  installed_version="$("${bin_dir}/apm" --version 2>&1 | head -n1 || true)"
+  echo "* Installed ${TOOL_NAME} ${version}: ${installed_version}"
+}
+
+install_version

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+echo "Agent Package Manager (APM) by Microsoft — a dependency manager for AI agents."
+echo ""
+echo "APM provides manifest-based configuration (apm.yml) for AI agent setup and"
+echo "dependencies, similar to package.json for npm. It supports transitive dependency"
+echo "resolution, content security scanning, and multi-source package hosting."

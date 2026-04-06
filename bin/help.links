@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+echo "Microsoft APM GitHub Repository: https://github.com/microsoft/apm"
+echo "APM Documentation:               https://github.com/microsoft/apm#readme"
+echo "APM Releases:                    https://github.com/microsoft/apm/releases"
+echo "asdf-apm Plugin:                 https://github.com/edwinhern/asdf-apm"

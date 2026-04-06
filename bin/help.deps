@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+echo "System dependencies required by this plugin:"
+echo ""
+echo "  - bash  >= 4.0"
+echo "  - curl"
+echo "  - tar"
+echo "  - sha256sum or shasum (for checksum verification)"

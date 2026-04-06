@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+current_script_path=${BASH_SOURCE[0]}
+plugin_dir=$(dirname "$(dirname "$current_script_path")")
+
+# shellcheck source=lib/utils.bash
+source "${plugin_dir}/lib/utils.bash"
+
+# Only "version" installs are supported (not git refs)
+if [[ "${ASDF_INSTALL_TYPE}" != "version" ]]; then
+  fail "asdf-${TOOL_NAME} only supports release versions, not git refs."
+fi
+
+version="${ASDF_INSTALL_VERSION}"
+download_path="${ASDF_DOWNLOAD_PATH}"
+
+download_url="$(get_download_url "${version}")"
+checksum_url="$(get_checksum_url "${version}")"
+
+platform="$(get_platform)"
+archive_name="apm-${platform}.tar.gz"
+checksum_name="${archive_name}.sha256"
+
+tmp_dir="$(mktemp -d)"
+trap 'rm -rf "${tmp_dir}"' EXIT
+
+echo "* Downloading ${TOOL_NAME} ${version} for ${platform}..."
+curl_download "${download_url}" "${tmp_dir}/${archive_name}"
+curl_download "${checksum_url}" "${tmp_dir}/${checksum_name}"
+
+echo "* Verifying checksum..."
+verify_checksum "${tmp_dir}/${archive_name}" "${tmp_dir}/${checksum_name}"
+
+echo "* Extracting ${archive_name}..."
+mkdir -p "${download_path}"
+tar -xzf "${tmp_dir}/${archive_name}" -C "${download_path}"
+
+echo "* Download complete."
