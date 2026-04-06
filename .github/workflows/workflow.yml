@@ -38,7 +38,10 @@ jobs:
         uses: asdf-vm/actions/setup@v3
 
       - name: Install plugin tools (shellcheck, shfmt)
-        run: asdf install
+        run: |
+          asdf plugin add shellcheck
+          asdf plugin add shfmt
+          asdf install
 
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master

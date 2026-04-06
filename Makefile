@@ -1,16 +1,13 @@
-SH_SRCFILES = $(shell git ls-files "bin/*" "lib/*")
-SHFMT_BASE_FLAGS = -s -i 2 -ci
-
 fmt:
-	shfmt -w $(SHFMT_BASE_FLAGS) $(SH_SRCFILES)
+	bash scripts/format.bash
 .PHONY: fmt
 
 fmt-check:
-	shfmt -d $(SHFMT_BASE_FLAGS) $(SH_SRCFILES)
+	shfmt --language-dialect bash --diff bin/* lib/* scripts/*
 .PHONY: fmt-check
 
 lint:
-	shellcheck -x --source-path=SCRIPTDIR $(SH_SRCFILES)
+	bash scripts/lint.bash
 .PHONY: lint
 
 test:
