@@ -2,76 +2,41 @@
 
 [![CI](https://github.com/edwinhern/asdf-apm/actions/workflows/workflow.yml/badge.svg)](https://github.com/edwinhern/asdf-apm/actions/workflows/workflow.yml)
 
-[Agent Package Manager (APM)](https://github.com/microsoft/apm) plugin for [asdf](https://asdf-vm.com).
+[asdf](https://asdf-vm.com) plugin for installing [Agent Package Manager (APM)](https://github.com/microsoft/apm).
 
-APM is an open-source dependency manager for AI agents by Microsoft. It provides manifest-based configuration via `apm.yml`, similar to `package.json` for npm, with transitive dependency resolution and content security scanning.
+## Install
 
-## Installation
+Plugin
 
-### Add the plugin
-
-```bash
+```shell
 asdf plugin add apm https://github.com/edwinhern/asdf-apm
 ```
 
-### Install a version
+apm:
 
-```bash
-# Install the latest stable version
+```shell
+# Show all installable versions
+asdf list all apm
+
+# Install specific version
 asdf install apm latest
 
-# Install a specific version
-asdf install apm 0.8.11
-```
-
-### Set the version
-
-```bash
-# Set globally
+# Set a version globally (on your ~/.tool-versions file)
 asdf set -u apm latest
 
-# Set locally (writes to .tool-versions in current directory)
-asdf set -p apm 0.8.11
-```
-
-### Verify
-
-```bash
+# Now apm commands are available
 apm --version
 ```
 
----
-
-## Usage with `.tool-versions`
-
-Add a `.tool-versions` file to your project:
-
-```txt
-apm 0.8.11
-```
-
-Then run:
-
-```bash
-asdf install
-```
-
----
-
-## Available Versions
-
-```bash
-asdf list all apm
-```
+Check [asdf](https://github.com/asdf-vm/asdf) readme for more instructions on how to
+install & manage versions.
 
 ---
 
 ## Contributing
 
-Pull requests welcome. Please open an issue first for significant changes.
-
----
+Contributions of any kind welcome! See the [contributing guide](contributing.md).
 
 ## License
 
-[MIT](LICENSE)
+See [LICENSE](LICENSE) © [Edwin Hernandez](https://github.com/edwinhern/)
