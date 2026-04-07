@@ -61,7 +61,7 @@ asdf install
 ## Available Versions
 
 ```bash
-asdf list-all apm
+asdf list all apm
 ```
 
 ---
