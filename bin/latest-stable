@@ -8,12 +8,4 @@ plugin_dir=$(dirname "$(dirname "$current_script_path")")
 # shellcheck source=../lib/utils.bash
 . "${plugin_dir}/lib/utils.bash"
 
-# Follow redirects silently and capture the final URL — avoids fragile header parsing
-# which produces a trailing \r on HTTP/1.1 responses, breaking version extraction.
-redirect_url=$(curl "${curl_opts[@]}" -o /dev/null -w '%{url_effective}' "$GH_REPO/releases/latest")
-
-if [[ "$redirect_url" == "$GH_REPO/releases" ]]; then
-	list_all_versions | sort_versions | tail -n1
-else
-	printf '%s\n' "$redirect_url" | sed 's|.*/tag/||; s|^v||'
-fi
+resolve_latest_version

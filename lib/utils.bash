@@ -57,10 +57,21 @@ get_url() {
 	echo "$GH_REPO/releases/download/v${version}/apm-${platform}.tar.gz"
 }
 
+resolve_latest_version() {
+	curl "${curl_opts[@]}" -o /dev/null -w '%{url_effective}' \
+		"$GH_REPO/releases/latest" | sed 's|.*/tag/||; s|^v||'
+}
+
 download_release() {
 	local version filename url
 	version="$1"
 	filename="$2"
+
+	# asdf 0.16+ passes "latest" literally when --asdf-tool-version latest is
+	# used; resolve it to a concrete version so the download URL is correct.
+	if [[ "$version" == "latest" ]]; then
+		version="$(resolve_latest_version)"
+	fi
 
 	url="$(get_url)"
 
