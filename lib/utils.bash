@@ -7,13 +7,12 @@ TOOL_NAME="apm"
 TOOL_TEST="apm --version"
 
 fail() {
-	echo -e "asdf-$TOOL_NAME: $*" >&2
+	printf 'asdf-%s: %s\n' "$TOOL_NAME" "$*" >&2
 	exit 1
 }
 
 curl_opts=(-fsSL)
 
-# NOTE: You might want to remove this if apm is not hosted on GitHub releases.
 if [ -n "${GITHUB_API_TOKEN:-}" ]; then
 	curl_opts=("${curl_opts[@]}" -H "Authorization: token $GITHUB_API_TOKEN")
 fi
@@ -52,9 +51,9 @@ get_platform() {
 }
 
 get_url() {
-	local platform
+	local version="$1" platform
 	platform="$(get_platform)"
-	echo "$GH_REPO/releases/download/v${version}/apm-${platform}.tar.gz"
+	printf '%s\n' "$GH_REPO/releases/download/v${version}/apm-${platform}.tar.gz"
 }
 
 resolve_latest_version() {
@@ -80,7 +79,7 @@ download_release() {
 		version="$(resolve_latest_version)"
 	fi
 
-	url="$(get_url)"
+	url="$(get_url "$version")"
 
 	echo "* Downloading $TOOL_NAME release $version..."
 	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
