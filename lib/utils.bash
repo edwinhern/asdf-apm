@@ -58,8 +58,15 @@ get_url() {
 }
 
 resolve_latest_version() {
-	curl "${curl_opts[@]}" -o /dev/null -w '%{url_effective}' \
-		"$GH_REPO/releases/latest" | sed 's|.*/tag/||; s|^v||'
+	local redirect_url
+	redirect_url=$(curl "${curl_opts[@]}" -o /dev/null -w '%{url_effective}' \
+		"$GH_REPO/releases/latest")
+
+	if [[ "$redirect_url" == *"/tag/"* ]]; then
+		printf '%s\n' "$redirect_url" | sed 's|.*/tag/||; s|^v||'
+	else
+		list_all_versions | sort_versions | tail -n1
+	fi
 }
 
 download_release() {
