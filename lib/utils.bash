@@ -7,7 +7,7 @@ TOOL_NAME="apm"
 TOOL_TEST="apm --version"
 
 fail() {
-	printf 'asdf-%s: %s\n' "$TOOL_NAME" "$*" >&2
+	printf '%s: %s\n' "$TOOL_NAME" "$*" >&2
 	exit 1
 }
 
