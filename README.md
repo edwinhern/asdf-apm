@@ -2,17 +2,33 @@
 
 [![CI](https://github.com/edwinhern/asdf-apm/actions/workflows/workflow.yml/badge.svg)](https://github.com/edwinhern/asdf-apm/actions/workflows/workflow.yml)
 
-[asdf](https://asdf-vm.com) plugin for installing [Agent Package Manager (APM)](https://github.com/microsoft/apm).
+[asdf](https://asdf-vm.com) / [mise](https://mise.jdx.dev) plugin for installing [Agent Package Manager (APM)](https://github.com/microsoft/apm).
 
-## Install
+## Install with mise
 
-Plugin
+```shell
+mise plugin install apm https://github.com/edwinhern/asdf-apm
+```
+
+```shell
+# Show all installable versions
+mise ls-remote apm
+
+# Install specific version
+mise install apm@latest
+
+# Set a version globally
+mise use --global apm@latest
+
+# Now apm commands are available
+apm --version
+```
+
+## Install with asdf
 
 ```shell
 asdf plugin add apm https://github.com/edwinhern/asdf-apm
 ```
-
-apm:
 
 ```shell
 # Show all installable versions
@@ -28,7 +44,7 @@ asdf set -u apm latest
 apm --version
 ```
 
-Check [asdf](https://github.com/asdf-vm/asdf) readme for more instructions on how to
+Check [mise](https://mise.jdx.dev) or [asdf](https://github.com/asdf-vm/asdf) readme for more instructions on how to
 install & manage versions.
 
 ---
