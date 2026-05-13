@@ -67,10 +67,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: jdx/mise-action@v2
-      - name: Install plugin
-        run: mise plugin install apm "$GITHUB_WORKSPACE"
-        env:
-          GITHUB_API_TOKEN: ${{ github.token }}
+      - name: Link plugin
+        run: mise plugin link apm "$GITHUB_WORKSPACE"
       - name: Install apm
         run: mise install apm@latest
         env:
